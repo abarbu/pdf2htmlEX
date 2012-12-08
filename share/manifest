@@ -20,11 +20,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="generator" content="pdf2htmlEX"/>
+<script
+  src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
+</script>
 """
 
 @base.css
 $css
-@jquery.js
 @pdf2htmlEX.js
 
 """
