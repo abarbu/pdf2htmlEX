@@ -1,0 +1,54 @@
+#!/bin/bash
+
+EXPECTED_ARGS=4
+E_BADARGS=65
+
+if [ $# -lt $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` pdf page-template data-dir output-dir"
+  exit $E_BADARGS
+fi
+
+input_dir=$(dirname $1)
+output_dir=$4
+data_dir=$3
+template=$(basename $2)
+
+mkdir -p $output_dir
+pdf2htmlEX $1 --data-dir data_dir  --split-pages 1 --single-html 0 --zoom 4 --dest-dir $output_dir
+cd output_dir
+cp $2 .
+CSS=$(basename *.css)
+
+# search for where the videos, if any are
+for v in $(grep "<video" *.page | awk -F "<video" '{print $2}' | awk -F "src=\"" '{print $2}' | awk -F "\"/>" '{print $1}')
+do
+    media_dir=$(dirname $v)
+    video=$(basename $v)
+    ext=$(echo $video | awk -F\. '{print $2}')
+    source_file=$input_dir/$media_dir/$video
+    mkdir -p $media_dir
+
+    if [ -e $source_file ]
+    then
+	echo cp $source_file $media_dir/.
+	cp $source_file $media_dir/.
+    else
+	actual_source_file=$(dirname $source_file)/$(basename $source_file .$ext).*
+	echo ffmpeg -i $actual_source_file $media_dir/$video
+	ffmpeg -i $actual_source_file $media_dir/$video
+    fi
+done
+
+for i in *.page
+do
+    # put in page fragment
+    sed '/insert page/r '$i'' $template >temp_write
+    # put in base and generated css
+    sed '/insert css/ a\ <link rel="stylesheet" href="'$data_dir/base.css'" type=text/css"/>' temp_write >temp_write2
+    sed '/insert css/ a\ <link rel="stylesheet" href="'$CSS'" type="text/css"/>' temp_write2 > temp_write
+    # put in slide navigation js and pdf2htmlEX js
+    sed '/insert js/ a\ <script src="'$data_dir/slide.js'"></script>' temp_write > temp_write2
+    sed '/insert js/ a\ <script src="'$data_dir/pdf2htmlEX.js'"></script>' temp_write2 > $i
+    rm temp_write temp_write2
+done
