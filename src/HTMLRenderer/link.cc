@@ -19,7 +19,7 @@
 #include "util/misc.h"
 
 namespace pdf2htmlEX {
-   
+
 using std::ostringstream;
 using std::min;
 using std::max;
@@ -108,7 +108,7 @@ static string get_dest_detail_str(int pageno, LinkDest * dest)
 
     return sout.str();
 }
-    
+
 /*
  * Based on pdftohtml from poppler
  * TODO: CSS for link rectangles
@@ -208,8 +208,8 @@ void HTMLRenderer::processLink(AnnotLink * al)
     y = min<double>(y1, y2);
     w = max<double>(x1, x2) - x;
     h = max<double>(y1, y2) - y;
-    
-    double border_width = 0; 
+
+    double border_width = 0;
     double border_top_bottom_width = 0;
     double border_left_right_width = 0;
     auto * border = al->getBorder();
@@ -219,7 +219,7 @@ void HTMLRenderer::processLink(AnnotLink * al)
         if(border_width > 0)
         {
             {
-                css_fix_rectangle_border_width(x1, y1, x2, y2, border_width, 
+                css_fix_rectangle_border_width(x1, y1, x2, y2, border_width,
                         x, y, w, h,
                         border_top_bottom_width, border_left_right_width);
 
@@ -292,7 +292,7 @@ void HTMLRenderer::processLink(AnnotLink * al)
     html_fout << "background-color:rgba(255,255,255,0.000001);";
 
     html_fout << "\">";
-    if(dest_video != "") html_fout << "<video src=\"" << dest_video << "\"/>";
+    if(dest_video != "") html_fout << "<video preload autoplay src=\"" << dest_video << "\"/>";
     html_fout << "</div>";
 
     if(dest_str != "")
