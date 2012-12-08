@@ -15,8 +15,8 @@ data_dir=$3
 template=$(basename $2)
 
 mkdir -p $output_dir
-pdf2htmlEX $1 --data-dir data_dir  --split-pages 1 --single-html 0 --zoom 4 --dest-dir $output_dir
-cd output_dir
+pdf2htmlEX $1 --data-dir $data_dir --split-pages 1 --single-html 0 --zoom 4 --dest-dir $output_dir
+cd $output_dir
 cp $2 .
 CSS=$(basename *.css)
 
@@ -31,7 +31,6 @@ do
 
     if [ -e $source_file ]
     then
-	echo cp $source_file $media_dir/.
 	cp $source_file $media_dir/.
     else
 	actual_source_file=$(dirname $source_file)/$(basename $source_file .$ext).*
@@ -40,6 +39,7 @@ do
     fi
 done
 
+# setup the individual pages
 for i in *.page
 do
     # put in page fragment
@@ -50,5 +50,5 @@ do
     # put in slide navigation js and pdf2htmlEX js
     sed '/insert js/ a\ <script src="'$data_dir/slide.js'"></script>' temp_write > temp_write2
     sed '/insert js/ a\ <script src="'$data_dir/pdf2htmlEX.js'"></script>' temp_write2 > $i
-    rm temp_write temp_write2
 done
+rm temp_write temp_write2
