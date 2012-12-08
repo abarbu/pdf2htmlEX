@@ -23,6 +23,9 @@
 <script
   src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
 </script>
+<script src="http://releases.flowplayer.org/5.2.0/flowplayer.min.js"></script>
+<link rel="stylesheet" type="text/css"
+   href="http://releases.flowplayer.org/5.2.0/skin/minimalist.css" />
 """
 
 @base.css

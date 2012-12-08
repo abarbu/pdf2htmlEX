@@ -116,7 +116,7 @@ static string get_dest_detail_str(int pageno, LinkDest * dest)
  */
 void HTMLRenderer::processLink(AnnotLink * al)
 {
-    std::string dest_str, dest_detail_str;
+    std::string dest_str, dest_detail_str, dest_video;
     auto action = al->getAction();
     if(action)
     {
@@ -169,7 +169,15 @@ void HTMLRenderer::processLink(AnnotLink * al)
                 break;
             case actionLaunch:
                 {
-                    cerr << "TODO: actionLaunch is not implemented." << endl;
+                    // TODO All action links are now videos
+                    auto * real_action = dynamic_cast<LinkLaunch*>(action);
+                    std::string action_name = real_action->getFileName()->getCString();
+                    std::string video = "video";
+                    if(action_name.substr(0, video.size()) == video) {
+                      std::ostringstream ostream;
+                      ostream << real_action->getFileName()->getCString() << ".mp4";
+                      dest_video = ostream.str();
+                    }
                 }
                 break;
             default:
@@ -187,10 +195,11 @@ void HTMLRenderer::processLink(AnnotLink * al)
 
         html_fout << ">";
     }
-
-    html_fout << "<div class=\"Cd t"
-        << install_transform_matrix(default_ctm)
-        << "\" style=\"";
+    html_fout << "<div class=\"Cd t" << install_transform_matrix(default_ctm);
+    if(dest_video != "") {
+      html_fout << " flowplayer";
+    }
+    html_fout << "\" style=\"";
 
     double x,y,w,h;
     double x1, y1, x2, y2;
@@ -282,7 +291,9 @@ void HTMLRenderer::processLink(AnnotLink * al)
     // fix for IE
     html_fout << "background-color:rgba(255,255,255,0.000001);";
 
-    html_fout << "\"></div>";
+    html_fout << "\">";
+    if(dest_video != "") html_fout << "<video src=\"" << dest_video << "\"/>";
+    html_fout << "</div>";
 
     if(dest_str != "")
     {
